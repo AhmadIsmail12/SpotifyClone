@@ -24,7 +24,7 @@ class SearchViewController : UIViewController , UISearchBarDelegate , UICollecti
         self.searchBar.searchBarStyle = .minimal
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         let deltaBtwnRefreshAndDateNow = Calendar.current.dateComponents([.second], from: AuthenticationManager.shared.dateTokenRefreshed , to: Date()).second ?? 0
-        if deltaBtwnRefreshAndDateNow > 3600 {
+        if deltaBtwnRefreshAndDateNow > AuthenticationManager.shared.tokenExpireDate {
             AuthenticationManager.shared.refreshAccesToken { [weak self] success in
                 if success == false {
                     DispatchQueue.main.async {
@@ -64,6 +64,7 @@ class SearchViewController : UIViewController , UISearchBarDelegate , UICollecti
         guard let query = searchBar.text , !query.trimmingCharacters(in: .whitespaces).isEmpty else {
             return
         }
+        self.searchResults = nil
         ApiManager.shared.searchApi(query: query) { Result in
             DispatchQueue.main.async {
                 switch Result {
@@ -92,6 +93,7 @@ class SearchViewController : UIViewController , UISearchBarDelegate , UICollecti
     
     //MARK: -  Search as you type
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchResults = nil
         guard let query = searchBar.text , !query.trimmingCharacters(in: .whitespaces).isEmpty else {
             return
         }
@@ -148,5 +150,9 @@ class SearchViewController : UIViewController , UISearchBarDelegate , UICollecti
         let albumsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AlbumsViewController") as! AlbumsViewController
         albumsViewController.id = self.searchResults?.artists.items[indexPath.row].id ?? ""
         self.navigationController?.pushViewController(albumsViewController, animated: true)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        view.endEditing(true)
     }
 }

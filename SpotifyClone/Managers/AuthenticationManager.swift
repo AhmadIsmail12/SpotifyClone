@@ -39,7 +39,7 @@ final class AuthenticationManager {
     }
     
     var tokenExpireDate : Int? {
-        return UserDefaults.standard.integer(forKey: "AccessToken")
+        return UserDefaults.standard.integer(forKey: "ExpireIn")
     }
     
     var dateTokenRefreshed : Date {
@@ -127,13 +127,13 @@ final class AuthenticationManager {
         task.resume()
     }
     
-    private func saveRefreshTokenResponse(refreshTokenModal : RefreshTokenModal){
+    private func saveRefreshTokenResponse(refreshTokenModal : RefreshTokenModal) {
         UserDefaults.standard.setValue(refreshTokenModal.access_token, forKey: "AccessToken")
         UserDefaults.standard.setValue(refreshTokenModal.expires_in, forKey: "ExpireIn")
         UserDefaults.standard.setValue(Date(), forKey: "dateTokenRefreshed")
     }
 
-    private func saveToken(authenticationModal : AuthenticationModal){
+    private func saveToken(authenticationModal : AuthenticationModal) {
         UserDefaults.standard.setValue(authenticationModal.access_token, forKey: "AccessToken")
         UserDefaults.standard.setValue(authenticationModal.refresh_token, forKey: "RefreshToken")
         UserDefaults.standard.setValue(authenticationModal.expires_in, forKey: "ExpireIn")
